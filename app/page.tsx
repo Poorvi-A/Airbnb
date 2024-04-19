@@ -8,7 +8,7 @@ import getListings, { IListingsParams } from "./actions/getListings";
 import getCurrentUser from "./actions/getCurrentUser";
 import { SafeUser } from "./types";
 
-interface HomeProps {
+export interface HomeProps {
   listings: Listing[];
   currentUser?: SafeUser | null;
 }
