@@ -1,19 +1,36 @@
+import getCurrentUser from "./actions/getCurrentUser";
+import getListings, { IListingsParams } from "./actions/getListings";
 import ClientOnly from "./components/ClientOnly";
 import Container from "./components/Container";
 import EmptyState from "./components/EmptyState";
 import ListingCard from "./components/listings/ListingCard";
 import { Listing } from "@prisma/client";
-import { GetServerSidePropsContext } from "next";
-import getListings, { IListingsParams } from "./actions/getListings";
-import getCurrentUser from "./actions/getCurrentUser";
 import { SafeUser } from "./types";
 
-export interface HomeProps {
+interface HomeProps {
+  searchParams: IListingsParams;
+}
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const searchParams = context.query as IListingsParams;
+
+  const listings = await getListings(searchParams);
+  const currentUser = await getCurrentUser();
+
+  return {
+    props: {
+      listings,
+      currentUser,
+    },
+  };
+};
+
+interface ServerSideHomeProps {
   listings: Listing[];
   currentUser?: SafeUser | null;
 }
 
-const Home = ({ listings, currentUser }: HomeProps) => {
+const Home = ({ listings, currentUser }: ServerSideHomeProps) => {
   if (listings.length === 0) {
     return (
       <ClientOnly>
